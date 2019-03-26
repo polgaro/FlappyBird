@@ -14,7 +14,7 @@ namespace FlappyBird.Screens
 {
     class GameScreen : Screen
     {
-        private Bird _entityBird;
+        private List<Bird> birds = new List<Bird> { }; //_entityBird;
         private List<Entity> _entityObstacles;
 
         private TimeSpan _previousRefreshTime;
@@ -40,7 +40,7 @@ namespace FlappyBird.Screens
 
         public override void LoadContent()
         {
-            _entityBird = new Entities.Bird(Entities.Entity.Type.Bird);
+            InitializeBirds(birds);
 
             _entityObstacles = new List<Entity>();
             _entityObstacles.Add(new Entity(Entity.Type.None));
@@ -62,7 +62,8 @@ namespace FlappyBird.Screens
             _previousDifficultyTime = TimeSpan.Zero;
             _difficultyTime = TimeSpan.FromMilliseconds(_difficultyRate);
 
-            _entityBird = new Entities.Bird(Entities.Entity.Type.Bird);
+            InitializeBirds(birds);
+            //_entityBird = new Entities.Bird(Entities.Entity.Type.Bird);
 
             _entityObstacles.Clear();
             _entityObstacles.Add(new Entities.Entity(Entities.Entity.Type.None));
@@ -75,6 +76,15 @@ namespace FlappyBird.Screens
 
             Statics.GAME_BACKGROUND.ResetBackgrounds();
             Statics.GAME_FOREGROUND.ResetBackgrounds();
+        }
+
+        private void InitializeBirds(List<Bird> birds)
+        {
+            birds.Clear();
+            for(int i = 0; i < Statics.AmountOfBirds; i++)
+            {
+                birds.Add(new Entities.Bird(Entities.Entity.Type.Bird));
+            }
         }
 
         public override void Update()
@@ -146,7 +156,7 @@ namespace FlappyBird.Screens
                         {
                             _isCheckingCollision = true;
 
-                            //FOR EACH BIRD
+                            foreach(var _entityBird in birds)
                             {
                                 bool isCollision = Statics.COLLISION_USESLOPPY ?
                                     Helpers.Collision.IsSloppyCollision(obstacleBound, _entityBird.Bounds[0]) :
@@ -166,10 +176,10 @@ namespace FlappyBird.Screens
                                 }
                             }
 
-                            if (_entityBird.IsDead)
+                            if (birds.All(x => x.IsDead))
                                 SetGameState(Statics.STATE.GameOver);
 
-                            Statics.GAME_SCORE = _entityBird.Points;
+                            Statics.GAME_SCORE = birds.Max(x => x.Points);
 
                             if (obstacle.Position.X <= -obstacle.Width)
                                 this._entityObstacles.Remove(obstacle);
@@ -186,9 +196,13 @@ namespace FlappyBird.Screens
                 }
 
                 Statics.DEBUG_ENTITIES = _entityObstacles.Count;
-                Statics.DEBUG_PLAYER = _entityBird.Position;
+                
 
-                _entityBird.Update();
+                foreach(var _entityBird in birds)
+                {
+                    Statics.DEBUG_PLAYER = _entityBird.Position;
+                    _entityBird.Update();
+                }
 
                 foreach (var obstacle in _entityObstacles)
                 {
@@ -201,7 +215,10 @@ namespace FlappyBird.Screens
 
         public override void Draw()
         {
-            _entityBird.Draw();
+            foreach (var _entityBird in birds)
+            {
+                _entityBird.Draw();
+            }
 
             foreach (var obstacle in _entityObstacles)
             {
