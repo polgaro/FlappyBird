@@ -218,7 +218,6 @@ namespace FlappyBird.Screens
             foreach (var _entityBird in birds)
             {
                 _entityBird.Draw();
-                //caca
             }
 
             foreach (var obstacle in _entityObstacles)
