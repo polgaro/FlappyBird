@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using FlappyBird.AI;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -20,7 +21,9 @@ namespace FlappyBird.Entities
         public bool IsDead = false;
         public int Points = 0;
 
-        public Bird(Type type) : base(type)
+        public IController Controller { get; }
+
+        public Bird(Type type, IController controller) : base(type)
         {
             this.Texture = Statics.MANAGER_TEXTURES.Textures["Entity\\DeadBird"];
             this.Position = new Vector2(300, 300);
@@ -32,6 +35,7 @@ namespace FlappyBird.Entities
             this.MoveSpeed = 5f;
             this.ColorData = new Color[this.Width * this.Height];
             this.Texture.GetData(ColorData);
+            this.Controller = controller;
 
             Texture2D texture = Statics.MANAGER_TEXTURES.AnimatedTextures["Entity\\Bird"];
 
@@ -43,7 +47,7 @@ namespace FlappyBird.Entities
 
         public override void Update()
         {
-            if (Statics.GAME_STATE == Statics.STATE.Playing)
+            if (Statics.GAME_STATE == Statics.STATE.Playing && !this.IsDead)
             {
                 _ySpeed += UseSlowFall ? Statics.ySpeedSlowFall : Statics.ySpeedNormalFall;
 
@@ -57,7 +61,6 @@ namespace FlappyBird.Entities
                 }
                 else
                 {
-                    Statics.GAME_STATE = Statics.STATE.GameOver;
                     this.IsDead = true;
                 }
 
@@ -87,19 +90,13 @@ namespace FlappyBird.Entities
 
         private void CheckForInput()
         {
-            if (Statics.MANAGER_INPUT.IsKeyPressed(Keys.Space) || Statics.MANAGER_INPUT.IsLeftMouseClicked())
+            if (Controller.WantsToJump())
                 Jump();
 
-            if (Statics.MANAGER_INPUT.CurrentGamePadState().DPad.Up == ButtonState.Pressed)
-                Jump();
-
-            if (Statics.MANAGER_INPUT.IsGamepadPressed(Buttons.A))
-                Jump();
-
-            if (Statics.MANAGER_INPUT.IsKeyPressed(Keys.D1))
+            if (Controller.WantsJumpBoost()) 
                 UseJumpBoost = UseJumpBoost ? false : true;
 
-            if (Statics.MANAGER_INPUT.IsKeyPressed(Keys.D2))
+            if (Controller.WantsSlowFall())
                 UseSlowFall = UseSlowFall ? false : true;
 
             // Input : Gamepad

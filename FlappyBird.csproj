@@ -59,6 +59,8 @@
     <StartupObject>FlappyBird.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="AI\IController.cs" />
+    <Compile Include="AI\KeyboardController.cs" />
     <Compile Include="Helpers\FPSMonitor.cs" />
     <Compile Include="Layers\Background.cs" />
     <Compile Include="Layers\Foreground.cs" />

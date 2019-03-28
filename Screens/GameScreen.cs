@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
 using FlappyBird.Entities;
+using FlappyBird.AI;
 
 namespace FlappyBird.Screens
 {
@@ -83,7 +84,7 @@ namespace FlappyBird.Screens
             birds.Clear();
             for(int i = 0; i < Statics.AmountOfBirds; i++)
             {
-                birds.Add(new Entities.Bird(Entities.Entity.Type.Bird));
+                birds.Add(new Entities.Bird(Entities.Entity.Type.Bird, new KeyboardController()));
             }
         }
 
@@ -156,7 +157,7 @@ namespace FlappyBird.Screens
                         {
                             _isCheckingCollision = true;
 
-                            foreach(var _entityBird in birds)
+                            foreach(var _entityBird in birds.Where(x => !x.IsDead))
                             {
                                 bool isCollision = Statics.COLLISION_USESLOPPY ?
                                     Helpers.Collision.IsSloppyCollision(obstacleBound, _entityBird.Bounds[0]) :
@@ -176,8 +177,7 @@ namespace FlappyBird.Screens
                                 }
                             }
 
-                            if (birds.All(x => x.IsDead))
-                                SetGameState(Statics.STATE.GameOver);
+                            
 
                             Statics.GAME_SCORE = birds.Max(x => x.Points);
 
@@ -188,6 +188,9 @@ namespace FlappyBird.Screens
                         }
                     }
                 }
+
+                if (birds.All(x => x.IsDead))
+                    SetGameState(Statics.STATE.GameOver);
 
                 if (Statics.GAME_SCORE > Statics.GAME_HIGHSCORE)
                 {
