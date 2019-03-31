@@ -13,9 +13,7 @@ namespace FlappyBird.AI
     {
         public FitnessInfo Evaluate(Bird bird)
         {
-            //HACK: it should be time + points * 100
-
-            double fitness = bird.Points;
+            double fitness = bird.GameTime.TotalSeconds + bird.Points * 100;
 
             return new FitnessInfo(fitness, fitness);
         }

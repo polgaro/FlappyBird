@@ -21,6 +21,7 @@ namespace FlappyBird.Entities
 
         public bool IsDead = false;
         public int Points = 0;
+        public TimeSpan GameTime { get; set; }
 
         public IController Controller { get; }
 
@@ -64,9 +65,17 @@ namespace FlappyBird.Entities
                 //play!
                 else
                 {
+                    GameTime = Statics.TIME_ACTUALGAMETIME;
+
                     _ySpeed += UseSlowFall ? Statics.ySpeedSlowFall : Statics.ySpeedNormalFall;
 
                     CheckForInput();
+
+
+                    if (this.Position.Y < this.Height * this.Scale)
+                    {
+                        this.IsDead = true;
+                    }
 
                     this.Position.Y = MathHelper.Clamp(this.Position.Y, (this.Height * this.Scale), Statics.GAME_FLOOR + this.Height * _bird_Sprite.Scale);
 
@@ -170,7 +179,7 @@ namespace FlappyBird.Entities
 
         private void Jump()
         {
-            Statics.MANAGER_SOUND.Play("Player\\Jump");
+            //Statics.MANAGER_SOUND.Play("Player\\Jump");
 
             _ySpeed = UseJumpBoost ? Statics.BoostedJumpHeight : Statics.NormalJumpHeight;
         }

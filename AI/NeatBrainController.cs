@@ -57,7 +57,7 @@ namespace FlappyBird.AI
             _brain.Activate();
 
             //this is arbitrary, it's only important for the first generation
-            return _brain.OutputSignalArray[0] > 1;
+            return _brain.OutputSignalArray[0] > 0.95;
         }
 
         private void SetInputSignalArray(ISignalArray inputSignalArray, ScreenInputSignal screenInputSignal)

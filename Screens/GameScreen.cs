@@ -21,14 +21,15 @@ namespace FlappyBird.Screens
 {
     public class GameScreen : Screen
     {
-        NeatEvolutionAlgorithm<NeatGenome> _ea;
+        public static NeatEvolutionAlgorithm<NeatGenome> _ea;
 
-        private List<Bird> birds = new List<Bird> { }; //_entityBird;
+        public static List<Bird> birds = new List<Bird> { }; //_entityBird;
         private static List<Entity> _entityObstacles;
 
         private TimeSpan _previousRefreshTime;
         private TimeSpan _refreshTime;
-        private float _refreshRate = 2000;
+        //private float _initialRefreshRate = 2000;
+        private float _initialRefreshRate = 2000;
 
         private TimeSpan _previousDifficultyTime;
         private TimeSpan _difficultyTime;
@@ -51,7 +52,7 @@ namespace FlappyBird.Screens
         public GameScreen()
         {
             _previousRefreshTime = TimeSpan.Zero;
-            _refreshTime = TimeSpan.FromMilliseconds(_refreshRate);
+            _refreshTime = TimeSpan.FromMilliseconds(_initialRefreshRate);
 
             _previousDifficultyTime = TimeSpan.Zero;
             _difficultyTime = TimeSpan.FromMilliseconds(_difficultyRate);
@@ -92,7 +93,7 @@ namespace FlappyBird.Screens
         public override void Reset()
         {
             _previousRefreshTime = TimeSpan.Zero;
-            _refreshTime = TimeSpan.FromMilliseconds(_refreshRate);
+            _refreshTime = TimeSpan.FromMilliseconds(_initialRefreshRate);
 
             _previousDifficultyTime = TimeSpan.Zero;
             _difficultyTime = TimeSpan.FromMilliseconds(_difficultyRate);
@@ -150,13 +151,13 @@ namespace FlappyBird.Screens
             birds.Clear();
 
             //Statics.AmountOfBirds
-            for (int i = 0; i < offspringData.OffspringList.Count; i++)
+            for (int i = 0; i < _ea.GenomeList.Count; i++)
             {
                 //birds.Add(new Entities.Bird(Entities.Entity.Type.Bird, new KeyboardController()));
                 //birds.Add(new Entities.Bird(Entities.Entity.Type.Bird, new RandomController(), GetNewColor()));
                 birds.Add(new Entities.Bird(Entities.Entity.Type.Bird, new NeatBrainController(
-                        decoder.Decode(offspringData.OffspringList[i]),
-                        offspringData.OffspringList[i]
+                        decoder.Decode(_ea.GenomeList[i]),
+                        _ea.GenomeList[i]
                     ), GetNewColor()));
             }
         }
@@ -274,7 +275,11 @@ namespace FlappyBird.Screens
                 }
 
                 if (birds.All(x => x.IsDead))
-                    SetGameState(Statics.STATE.GameOver);
+                {
+                    //Game over, reset
+                    SetGameState(Statics.STATE.Playing);
+                    Statics.MANAGER_SCREEN.Stack["Game"].Reset();
+                }
 
                 if (Statics.GAME_SCORE > Statics.GAME_HIGHSCORE)
                 {

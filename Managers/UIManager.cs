@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using FlappyBird.Screens;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -161,6 +162,8 @@ namespace FlappyBird.Managers
                 {
                     Statics.GAME_SPRITEBATCH.DrawString(Statics.MANAGER_FONT.Library["Small"], string.Format("Score: {0}", Statics.GAME_SCORE.ToString("00")), TextVectors["Game\\Score"], Color.White);
                     Statics.GAME_SPRITEBATCH.DrawString(Statics.MANAGER_FONT.Library["Small"], string.Format("Level: {0}", Statics.GAME_LEVEL.ToString("00")), TextVectors["Game\\Level"], Color.White);
+                    Statics.GAME_SPRITEBATCH.DrawString(Statics.MANAGER_FONT.Library["Small"], string.Format("Generation: {0}", GameScreen._ea.CurrentGeneration), new Vector2(20, 80), Color.White);
+                    Statics.GAME_SPRITEBATCH.DrawString(Statics.MANAGER_FONT.Library["Small"], string.Format("Birds Alive: {0}", GameScreen.birds.Count(b => !b.IsDead)), new Vector2(20, 110), Color.White);
                 }
             }
 
