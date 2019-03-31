@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using FlappyBird.AI;
+using FlappyBird.Screens;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
 namespace FlappyBird.Entities
 {
-    class Bird : Entity
+    public class Bird : Entity
     {
         private AnimatedSprite _bird_Sprite;
         private float _ySpeed;
@@ -113,17 +114,58 @@ namespace FlappyBird.Entities
 
         private void CheckForInput()
         {
-            if (Controller.WantsToJump())
+            ScreenInputSignal screenInputSignal = GenerateInputSignal();
+
+            if (Controller.WantsToJump(screenInputSignal))
                 Jump();
 
-            if (Controller.WantsJumpBoost()) 
+            if (Controller.WantsJumpBoost(screenInputSignal)) 
                 UseJumpBoost = UseJumpBoost ? false : true;
 
-            if (Controller.WantsSlowFall())
+            if (Controller.WantsSlowFall(screenInputSignal))
                 UseSlowFall = UseSlowFall ? false : true;
 
             // Input : Gamepad
             this.Position.X += Statics.MANAGER_INPUT.CurrentGamePadState().ThumbSticks.Left.X * this.MoveSpeed;
+        }
+
+        private ScreenInputSignal GenerateInputSignal()
+        {
+            Pipe pipe = GetPipe();
+
+            return new ScreenInputSignal {
+                IsBirdDead = IsDead,
+                YBirdCoordinate = Position.Y,
+                ObstacleBoundary1 = GetTopBoundary(pipe),
+                ObstacleBoundary2 = GetBottomBoundary(pipe),
+                DistanceToNextObstacle = GetDistanceToBoundary(pipe)
+            };
+        }
+
+        private double GetBottomBoundary(Pipe pipe)
+        {
+            if (pipe == null)
+                return 0;
+            return pipe.Bounds[0].Bottom;
+        }
+
+        private double GetTopBoundary(Pipe pipe)
+        {
+            if (pipe == null)
+                return 9999;
+            return pipe.Bounds[1].Top;
+        }
+
+        private double GetDistanceToBoundary(Pipe pipe)
+        {
+            if (pipe == null)
+                return 9999;
+            return Position.X - pipe.Bounds[0].X;
+        }
+
+        private Pipe GetPipe()
+        {
+            return GameScreen.PipeObstacles.FirstOrDefault();
         }
 
         private void Jump()

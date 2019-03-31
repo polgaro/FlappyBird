@@ -8,17 +8,17 @@ namespace FlappyBird.AI
 {
     public class RandomController : IController
     {
-        public bool WantsJumpBoost()
+        public bool WantsJumpBoost(ScreenInputSignal screenInputSignal)
         {
             return false;
         }
 
-        public bool WantsSlowFall()
+        public bool WantsSlowFall(ScreenInputSignal screenInputSignal)
         {
             return false;
         }
 
-        public bool WantsToJump()
+        public bool WantsToJump(ScreenInputSignal screenInputSignal)
         {
             return Statics.Random.Next(100) < 5;
         }

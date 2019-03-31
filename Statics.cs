@@ -102,6 +102,7 @@ namespace FlappyBird
         public static float NormalJumpHeight = Multiplier * -8f;
         public static float BoostedJumpHeight = Multiplier * -14f;
 
+        //only used if not using neat!
         public static int AmountOfBirds = 10;
 
         public static Random Random = new Random();

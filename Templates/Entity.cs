@@ -7,7 +7,7 @@ using System.Text;
 
 namespace FlappyBird.Entities
 {
-    class Entity
+    public class Entity
     {
         public enum Type
         {

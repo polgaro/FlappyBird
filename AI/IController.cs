@@ -8,8 +8,8 @@ namespace FlappyBird.AI
 {
     public interface IController
     {
-        bool WantsToJump();
-        bool WantsJumpBoost();
-        bool WantsSlowFall();
+        bool WantsToJump(ScreenInputSignal screenInputSignal);
+        bool WantsJumpBoost(ScreenInputSignal screenInputSignal);
+        bool WantsSlowFall(ScreenInputSignal screenInputSignal);
     }
 }

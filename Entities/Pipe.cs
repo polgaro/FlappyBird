@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace FlappyBird.Entities
 {
-    class Pipe : Entity
+    public class Pipe : Entity
     {
         private float _baseSpeed = 4f;
 

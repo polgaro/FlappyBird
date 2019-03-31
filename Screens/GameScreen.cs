@@ -10,13 +10,21 @@ using Microsoft.Xna.Framework.Input;
 
 using FlappyBird.Entities;
 using FlappyBird.AI;
+using System.Xml;
+using SharpNeat.EvolutionAlgorithms;
+using SharpNeat.Genomes.Neat;
+using SharpNeatLib.Model;
+using SharpNeat.Core;
+using SharpNeat.Phenomes;
 
 namespace FlappyBird.Screens
 {
-    class GameScreen : Screen
+    public class GameScreen : Screen
     {
+        NeatEvolutionAlgorithm<NeatGenome> _ea;
+
         private List<Bird> birds = new List<Bird> { }; //_entityBird;
-        private List<Entity> _entityObstacles;
+        private static List<Entity> _entityObstacles;
 
         private TimeSpan _previousRefreshTime;
         private TimeSpan _refreshTime;
@@ -29,6 +37,16 @@ namespace FlappyBird.Screens
         private TimeSpan _slowModeTime = TimeSpan.Zero;
         
         private bool _isCheckingCollision = false;
+        private FlappyBirdExperiment experiment;
+        private CreateOffpringDTO<NeatGenome> offspringData;
+
+        public static List<Pipe> PipeObstacles
+        {
+            get
+            {
+                return _entityObstacles.OfType<Pipe>().ToList();
+            }
+        }
 
         public GameScreen()
         {
@@ -41,12 +59,28 @@ namespace FlappyBird.Screens
 
         public override void LoadContent()
         {
+            experiment = new FlappyBirdExperiment();
+
+            // Load config XML.
+            XmlDocument xmlConfig = new XmlDocument();
+            xmlConfig.Load("expconfig.xml");
+            experiment.Initialize("TicTacToe", xmlConfig.DocumentElement);
+
+            // Create evolution algorithm and attach update event.
+            _ea = experiment.CreateEvolutionAlgorithm();
+            _ea.UpdateEvent += new EventHandler(ea_UpdateEvent);
+
             InitializeBirds(birds);
 
             _entityObstacles = new List<Entity>();
             _entityObstacles.Add(new Entity(Entity.Type.None));
             
             base.LoadContent();
+        }
+
+        private void ea_UpdateEvent(object sender, EventArgs e)
+        {
+            
         }
 
         public override void UnloadContent()
@@ -62,6 +96,29 @@ namespace FlappyBird.Screens
 
             _previousDifficultyTime = TimeSpan.Zero;
             _difficultyTime = TimeSpan.FromMilliseconds(_difficultyRate);
+
+            #region AI
+            //with the offpring, evaluate
+            var answers = birds.ToDictionary(
+                x => ((NeatBrainController)x.Controller).Genome,
+                x => new BirdEvaluator().Evaluate(x)
+            );
+
+            //set answers
+            KnownAnswerListEvaluator<NeatGenome, IBlackBox> evaluator = new KnownAnswerListEvaluator<NeatGenome, IBlackBox>();
+            evaluator.SetKnownAnswers(answers);
+
+            //call the evaluator
+            evaluator.Evaluate(offspringData.OffspringList);
+
+            //Update the species
+            _ea.UpdateSpecies(offspringData);
+
+            //call callbacks :)
+            _ea.PerformUpdateCallbacks();
+            #endregion
+
+
 
             InitializeBirds(birds);
             //_entityBird = new Entities.Bird(Entities.Entity.Type.Bird);
@@ -81,11 +138,26 @@ namespace FlappyBird.Screens
 
         private void InitializeBirds(List<Bird> birds)
         {
+            //start the generation
+            _ea.StartGeneration();
+
+            //create offpring
+            offspringData = _ea.CreateOffpring();
+
+            //create genome decoder
+            var decoder = experiment.CreateGenomeDecoder();
+
             birds.Clear();
-            for(int i = 0; i < Statics.AmountOfBirds; i++)
+
+            //Statics.AmountOfBirds
+            for (int i = 0; i < offspringData.OffspringList.Count; i++)
             {
                 //birds.Add(new Entities.Bird(Entities.Entity.Type.Bird, new KeyboardController()));
-                birds.Add(new Entities.Bird(Entities.Entity.Type.Bird, new RandomController(), GetNewColor()));
+                //birds.Add(new Entities.Bird(Entities.Entity.Type.Bird, new RandomController(), GetNewColor()));
+                birds.Add(new Entities.Bird(Entities.Entity.Type.Bird, new NeatBrainController(
+                        decoder.Decode(offspringData.OffspringList[i]),
+                        offspringData.OffspringList[i]
+                    ), GetNewColor()));
             }
         }
 
@@ -194,7 +266,7 @@ namespace FlappyBird.Screens
                             Statics.GAME_SCORE = birds.Max(x => x.Points);
 
                             if (obstacle.Position.X <= -obstacle.Width)
-                                this._entityObstacles.Remove(obstacle);
+                                _entityObstacles.Remove(obstacle);
 
                             _isCheckingCollision = false;
                         }
