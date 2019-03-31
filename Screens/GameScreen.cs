@@ -84,7 +84,8 @@ namespace FlappyBird.Screens
             birds.Clear();
             for(int i = 0; i < Statics.AmountOfBirds; i++)
             {
-                birds.Add(new Entities.Bird(Entities.Entity.Type.Bird, new KeyboardController()));
+                //birds.Add(new Entities.Bird(Entities.Entity.Type.Bird, new KeyboardController()));
+                birds.Add(new Entities.Bird(Entities.Entity.Type.Bird, new RandomController()));
             }
         }
 
