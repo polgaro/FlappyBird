@@ -20,7 +20,7 @@ namespace FlappyBird.AI
 
         public bool WantsToJump()
         {
-            return new Random().Next(100) < 5;
+            return Statics.Random.Next(100) < 5;
         }
     }
 }

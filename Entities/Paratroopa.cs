@@ -26,14 +26,14 @@ namespace FlappyBird.Entities
         public Paratroopa(Type type, float speedModifier)
             : base(type)
         {
-            this.Texture = ParallaxBackground.GetFromPng("Content\\Textures\\Entity\\flappy_paratroopa");
-            this.Position = new Vector2(Statics.GAME_WIDTH + this.Texture.Width, Statics.GAME_RANDOM.Next(Statics.GAME_HEIGHT / 2, Statics.GAME_FLOOR));
-            this.Width = this.Texture.Width;
-            this.Height = this.Texture.Height;
+            this.DeadTexture = ParallaxBackground.GetFromPng("Content\\Textures\\Entity\\flappy_paratroopa");
+            this.Position = new Vector2(Statics.GAME_WIDTH + this.DeadTexture.Width, Statics.GAME_RANDOM.Next(Statics.GAME_HEIGHT / 2, Statics.GAME_FLOOR));
+            this.Width = this.DeadTexture.Width;
+            this.Height = this.DeadTexture.Height;
             this.EntityType = type;
             this.MoveSpeed = _baseSpeed + speedModifier + Statics.GAME_RANDOM.Next(0, 3);
             this.ColorData = new Color[this.Width * this.Height];
-            this.Texture.GetData(ColorData);
+            this.DeadTexture.GetData(ColorData);
 
             Texture2D animated_Texture = ParallaxBackground.GetFromPng("Content\\Textures\\Entity\\flappy_paratroopa_animated");
 

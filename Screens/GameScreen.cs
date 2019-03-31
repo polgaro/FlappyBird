@@ -85,8 +85,19 @@ namespace FlappyBird.Screens
             for(int i = 0; i < Statics.AmountOfBirds; i++)
             {
                 //birds.Add(new Entities.Bird(Entities.Entity.Type.Bird, new KeyboardController()));
-                birds.Add(new Entities.Bird(Entities.Entity.Type.Bird, new RandomController()));
+                birds.Add(new Entities.Bird(Entities.Entity.Type.Bird, new RandomController(), GetNewColor()));
             }
+        }
+
+        private Color GetNewColor()
+        {
+            //return Color.Blue;
+            return new Color(255 - RandSubstract(), 255 - RandSubstract(), 255 - RandSubstract());
+        }
+
+        private int RandSubstract()
+        {
+            return Statics.Random.Next(250);
         }
 
         public override void Update()

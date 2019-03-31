@@ -127,7 +127,16 @@ namespace FlappyBird
             {
                 spriteBatch.Begin();
 
-                spriteBatch.Draw(this.spriteStrip, this.destinationRect, this.sourceRect, this.color, this.Rotation, this.SourceRotate, SpriteEffects.None, 0);
+                spriteBatch.Draw(
+                    this.spriteStrip, 
+                    this.destinationRect, 
+                    this.sourceRect, 
+                    this.color, 
+                    this.Rotation, 
+                    this.SourceRotate, 
+                    SpriteEffects.None, 
+                    0
+                    );
 
                 spriteBatch.End();
             } 

@@ -18,7 +18,7 @@ namespace FlappyBird.Entities
             Pipe
         }
 
-        public Texture2D Texture;
+        public Texture2D DeadTexture;
         public Vector2 Position;
         public float Rotation = 0f;
         public float MoveSpeed = 0f;

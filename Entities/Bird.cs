@@ -23,67 +23,90 @@ namespace FlappyBird.Entities
 
         public IController Controller { get; }
 
-        public Bird(Type type, IController controller) : base(type)
+        public Bird(Type type, IController controller) : this(type, controller, Color.White) { }
+
+        public Bird(Type type, IController controller, Color color) : base(type)
         {
-            this.Texture = Statics.MANAGER_TEXTURES.Textures["Entity\\DeadBird"];
+            this.DeadTexture = Statics.MANAGER_TEXTURES.Textures["Entity\\DeadBird"];
             this.Position = new Vector2(300, 300);
             this.Rotation = 0f;
             this.Scale = .75f;
             this.EntityType = type;
-            this.Width = this.Texture.Width;
-            this.Height = this.Texture.Height;
+            this.Width = this.DeadTexture.Width;
+            this.Height = this.DeadTexture.Height;
             this.MoveSpeed = 5f;
             this.ColorData = new Color[this.Width * this.Height];
-            this.Texture.GetData(ColorData);
+            this.DeadTexture.GetData(ColorData);
             this.Controller = controller;
 
             Texture2D texture = Statics.MANAGER_TEXTURES.AnimatedTextures["Entity\\Bird"];
 
             _bird_Sprite = new AnimatedSprite();
-            _bird_Sprite.Initialize(texture, this.Position, this.Rotation, 128, 128, 4, 60, Color.White, this.Scale, true);
+            _bird_Sprite.Initialize(texture, this.Position, this.Rotation, 128, 128, 4, 60, color, this.Scale, true);
 
             _ySpeed = 0f;
         }
 
         public override void Update()
         {
-            if (Statics.GAME_STATE == Statics.STATE.Playing && !this.IsDead)
+            if (Statics.GAME_STATE == Statics.STATE.Playing)
             {
-                _ySpeed += UseSlowFall ? Statics.ySpeedSlowFall : Statics.ySpeedNormalFall;
-
-                CheckForInput();
-
-                this.Position.Y =  MathHelper.Clamp(this.Position.Y, (this.Height * this.Scale), Statics.GAME_FLOOR + this.Height * _bird_Sprite.Scale);
-
-                if (this.Position.Y < Statics.GAME_FLOOR)
+                //if the bird is dead, move to the left
+                if (this.IsDead)
                 {
-                    this.Position.Y += _ySpeed;
+                    if (Statics.GAME_USESLOWMODE)
+                        this.Position.X -= this.MoveSpeed * Statics.GAME_SPEED_DIFFICULTY * Statics.GAME_SLOWMODERATE;
+                    else
+                        this.Position.X -= this.MoveSpeed * Statics.GAME_SPEED_DIFFICULTY;
                 }
+
+                //play!
                 else
                 {
-                    this.IsDead = true;
+                    _ySpeed += UseSlowFall ? Statics.ySpeedSlowFall : Statics.ySpeedNormalFall;
+
+                    CheckForInput();
+
+                    this.Position.Y = MathHelper.Clamp(this.Position.Y, (this.Height * this.Scale), Statics.GAME_FLOOR + this.Height * _bird_Sprite.Scale);
+
+                    if (this.Position.Y < Statics.GAME_FLOOR)
+                    {
+                        this.Position.Y += _ySpeed;
+                    }
+                    else
+                    {
+                        this.IsDead = true;
+                    }
+
+
+                    this.Rotation = (float)Math.Atan2(_ySpeed, 10);
+
+
+                    _bird_Sprite.Rotation = this.Rotation;
+
                 }
 
-                this.Rotation = (float)Math.Atan2(_ySpeed, 10);
-
                 _bird_Sprite.Position = this.Position;
-                _bird_Sprite.Rotation = this.Rotation;
                 _bird_Sprite.Update(Statics.GAME_GAMETIME);
             }
         }
 
         public override void Draw()
         {
-            if (Statics.GAME_STATE == Statics.STATE.GameOver)
+            if (IsDead)
             {
-                Statics.GAME_SPRITEBATCH.Begin();
-                Statics.GAME_SPRITEBATCH.Draw(this.Texture, _bird_Sprite.Bounds, new Rectangle(0, 0, _bird_Sprite.FrameWidth, _bird_Sprite.FrameHeight), Color.White, _bird_Sprite.Rotation, _bird_Sprite.SourceRotate, SpriteEffects.None, 1.0f);
-                Statics.GAME_SPRITEBATCH.End();
+                if (_bird_Sprite.Position.X > -_bird_Sprite.FrameWidth)
+                {
+                    Statics.GAME_SPRITEBATCH.Begin();
+                    Statics.GAME_SPRITEBATCH.Draw(this.DeadTexture, _bird_Sprite.Bounds, new Rectangle(0, 0, _bird_Sprite.FrameWidth, _bird_Sprite.FrameHeight), Color.White, _bird_Sprite.Rotation, _bird_Sprite.SourceRotate, SpriteEffects.None, 1.0f);
+                    Statics.GAME_SPRITEBATCH.End();
+                }
             }
             else
             {
                 _bird_Sprite.Draw(Statics.GAME_SPRITEBATCH);
             }
+
 
             base.Draw();
         }
