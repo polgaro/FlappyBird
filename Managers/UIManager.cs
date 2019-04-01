@@ -164,6 +164,8 @@ namespace FlappyBird.Managers
                     Statics.GAME_SPRITEBATCH.DrawString(Statics.MANAGER_FONT.Library["Small"], string.Format("Level: {0}", Statics.GAME_LEVEL.ToString("00")), TextVectors["Game\\Level"], Color.White);
                     Statics.GAME_SPRITEBATCH.DrawString(Statics.MANAGER_FONT.Library["Small"], string.Format("Generation: {0}", GameScreen._ea.CurrentGeneration), new Vector2(20, 80), Color.White);
                     Statics.GAME_SPRITEBATCH.DrawString(Statics.MANAGER_FONT.Library["Small"], string.Format("Birds Alive: {0}", GameScreen.birds.Count(b => !b.IsDead)), new Vector2(20, 110), Color.White);
+                    Statics.GAME_SPRITEBATCH.DrawString(Statics.MANAGER_FONT.Library["Small"], string.Format("Max Complexity: {0}", GameScreen._ea.Statistics._maxComplexity), new Vector2(20, 140), Color.White);
+                    Statics.GAME_SPRITEBATCH.DrawString(Statics.MANAGER_FONT.Library["Small"], string.Format("Champ Complexity: {0}", GameScreen._ea.CurrentChampGenome.Complexity), new Vector2(20, 170), Color.White);
                 }
             }
 
