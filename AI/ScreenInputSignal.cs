@@ -8,10 +8,11 @@ namespace FlappyBird.AI
 {
     public class ScreenInputSignal
     {
-        public double YBirdCoordinate { get; set; }
+        public double YTopBirdCoordinate { get; set; }
         public double DistanceToNextObstacle { get; set; }
         public double ObstacleBoundary1 { get; set; }
         public double ObstacleBoundary2 { get; set; }
         public bool IsBirdDead { get; set; }
+        public double YBottomBirdCoordinate { get; internal set; }
     }
 }

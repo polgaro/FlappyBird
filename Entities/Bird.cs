@@ -140,11 +140,13 @@ namespace FlappyBird.Entities
 
         private ScreenInputSignal GenerateInputSignal()
         {
+
             Pipe pipe = GetPipe();
 
             return new ScreenInputSignal {
                 IsBirdDead = IsDead,
-                YBirdCoordinate = Position.Y,
+                YTopBirdCoordinate = Bounds[0].Top,
+                YBottomBirdCoordinate = Bounds[0].Bottom,
                 ObstacleBoundary1 = GetTopBoundary(pipe),
                 ObstacleBoundary2 = GetBottomBoundary(pipe),
                 DistanceToNextObstacle = GetDistanceToBoundary(pipe)

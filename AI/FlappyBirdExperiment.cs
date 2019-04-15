@@ -18,7 +18,7 @@ namespace FlappyBird.AI
 
         public override int InputCount
         {
-            get { return 5; }
+            get { return 6; }
         }
 
         public override int OutputCount

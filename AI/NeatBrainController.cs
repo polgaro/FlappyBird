@@ -61,11 +61,12 @@ namespace FlappyBird.AI
 
         private void SetInputSignalArray(ISignalArray inputSignalArray, ScreenInputSignal screenInputSignal)
         {
-            inputSignalArray[0] = screenInputSignal.YBirdCoordinate;
-            inputSignalArray[1] = screenInputSignal.DistanceToNextObstacle;
-            inputSignalArray[2] = screenInputSignal.ObstacleBoundary1;
-            inputSignalArray[3] = screenInputSignal.ObstacleBoundary2;
-            inputSignalArray[4] = screenInputSignal.IsBirdDead ? 1 : 0;
+            inputSignalArray[0] = screenInputSignal.YTopBirdCoordinate;
+            inputSignalArray[1] = screenInputSignal.YBottomBirdCoordinate;
+            inputSignalArray[2] = screenInputSignal.DistanceToNextObstacle;
+            inputSignalArray[3] = screenInputSignal.ObstacleBoundary1;
+            inputSignalArray[4] = screenInputSignal.ObstacleBoundary2;
+            inputSignalArray[5] = screenInputSignal.IsBirdDead ? 1 : 0;
         }
     }
 }
